@@ -120,9 +120,10 @@ function startProcessing ()
         }
         catch (error)
         {
-            
+            console.log(colors.red, `ERROR : something went wrong, probably due to an incompatible json.
+            Open an issue please`)
+            console.log(error);
+            process.exit(1);
         }
-
-        
     });
 }

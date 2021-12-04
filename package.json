@@ -1,0 +1,16 @@
+{
+    "name": "phaser3-atlas-splitter",
+    "version": "0.0.1",
+    "description": "convert an atlas to individuals sprites",
+    "main": "index.js",
+    "keywords": [
+        "phaser3",
+        "atlas",
+        "sprite"
+    ],
+    "author": "huhmiel games",
+    "license": "ISC",
+    "dependencies": {
+        "jimp": "^0.16.1"
+    }
+}

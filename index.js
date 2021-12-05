@@ -8,6 +8,9 @@ const colors = {
     red: '\x1b[91m%s\x1b[39m'
 }
 
+// output directory name
+const dir = './output';
+
 const Bar = new ProgressBar();
 
 if (process.argv.length < 4)
@@ -19,14 +22,10 @@ if (process.argv.length < 4)
 }
 
 const atlasImageUrl = process.argv[2];
-const atlasJsonUrl = process.argv[ 3 ];
-
+const atlasJsonUrl = process.argv[3];
 
 let atlasJsonFile;
 let atlasImageFile;
-
-// output directory name
-const dir = './output';
 
 checkFilesExists();
 
@@ -38,7 +37,6 @@ function createOutputDir ()
 {
     try
     {
-        // first check if directory already exists
         if (!fs.existsSync(dir))
         {
             fs.mkdirSync(dir);
@@ -76,9 +74,9 @@ function checkFilesExists ()
 {
     try
     {
-        atlasImageFile = fs.readFileSync(`./${atlasImageUrl}`, "utf8");
+        atlasImageFile = fs.readFileSync(`./${ atlasImageUrl }`, "utf8");
 
-        atlasJsonFile = fs.readFileSync(`./${atlasJsonUrl}`, "utf8");
+        atlasJsonFile = fs.readFileSync(`./${ atlasJsonUrl }`, "utf8");
     }
     catch (error)
     {
@@ -91,9 +89,25 @@ function startProcessing ()
 {
     console.log('\x1b[33m%s\x1b[0m', 'Processing');
 
-    const frames = JSON.parse(atlasJsonFile).textures[ 0 ].frames;
+    const parsedAtlasJson = JSON.parse(atlasJsonFile)
+
+    let frames = [];
+
+    if (parsedAtlasJson.textures)
+    {
+        frames = parsedAtlasJson.textures[0].frames
+    }
+    else if (parsedAtlasJson.frames)
+    {
+        for (const key in parsedAtlasJson.frames)
+        {
+            parsedAtlasJson.frames[key].filename = key;
+            frames.push(parsedAtlasJson.frames[key]);
+        }
+    }
 
     const total = frames.length;
+
     let current = 0;
 
     Bar.init(total);
@@ -102,21 +116,22 @@ function startProcessing ()
     {
         if (err) throw err;
 
-        try {
+        try
+        {
             frames.forEach(frame =>
-                {
-                    const atlas = atlasImg.clone();
-        
-                    const frameImg = atlas.crop(frame.frame.x, frame.frame.y, frame.frame.w, frame.frame.h);
-        
-                    const img = new Jimp(frame.sourceSize.w, frame.sourceSize.h, 0x00000000);
-                    img.composite(frameImg, frame.spriteSourceSize.x, frame.spriteSourceSize.y);
-                    img.write(`${ dir }/${ frame.filename }.png`);
-        
-                    current += 1;
-                    Bar.update(current);
-                });
-                console.log('\x1b[33m%s\x1b[0m', '\nDone')
+            {
+                const atlas = atlasImg.clone();
+
+                const frameImg = atlas.crop(frame.frame.x, frame.frame.y, frame.frame.w, frame.frame.h);
+
+                const img = new Jimp(frame.sourceSize.w, frame.sourceSize.h, 0x00000000);
+                img.composite(frameImg, frame.spriteSourceSize.x, frame.spriteSourceSize.y);
+                img.write(`${ dir }/${ frame.filename }.png`);
+
+                current += 1;
+                Bar.update(current);
+            });
+            console.log('\x1b[33m%s\x1b[0m', '\nDone')
         }
         catch (error)
         {

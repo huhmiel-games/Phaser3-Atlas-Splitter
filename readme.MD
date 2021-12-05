@@ -28,3 +28,4 @@ The individuals sprites will be created in the output folder.
 ## Compatible Texture Packer Softwares
 - Free Texture Packer: http://free-tex-packer.com/
 - Must work with Texture Packer too (not tested)
+- Leshy SpriteSheet Tool  https://www.leshylabs.com/apps/sstool/
